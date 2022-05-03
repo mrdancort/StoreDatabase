@@ -1,0 +1,108 @@
+CREATE TABLE `Store` (
+  `storeNumber` INT(5) NOT NULL,
+  `street` VARCHAR(20),
+  `city` VARCHAR(20) ,
+  `state` CHAR(2),
+  `UniqueIndex` INT(10) NOT NULL,
+  PRIMARY KEY (`UniqueIndex`)
+);
+
+CREATE TABLE `Employee` (
+  `EmployeeID` int IDENTITY(1,1) PRIMARY KEY,
+  `SSN` VARCHAR(20) NOT NULL,
+  `DOB` VARCHAR(10) NOT NULL,
+  `Date of Hire` VARCHAR(10) NOT NULL,
+  `storeNumber` INT(5) NOT NULL ,
+  `UniqueIndex` INT(10) NOT NULL,
+  PRIMARY KEY (`EmployeeID`),
+  FOREIGN KEY (`UniqueIndex`) REFERENCES `Store`(`UniqueIndex`)
+);
+
+CREATE TABLE `Part Time` (
+  `EmployeeID` int IDENTITY(1,1) PRIMARY KEY,
+  `lastName` CHAR(20) NOT NULL,
+  `firstName` CHAR(20) NOT NULL,
+  `PhoneNumber` VARCHAR(10) NOT NULL,
+  `Email` VARCHAR(25) NOT NULL,
+  `Wage` DOUBLE(20) NOT NULL,
+  PRIMARY KEY (`EmployeeID`),
+  FOREIGN KEY (`EmployeeID`) REFERENCES `Employee`(`EmployeeID`)
+);
+
+CREATE TABLE `Shift` (
+  `EmployeeID` int IDENTITY(1,1) PRIMARY KEY,
+  `shiftDate` VARCHAR(10) NOT NULL,
+  `hours` VARCHAR(10) NOT NULL,
+  FOREIGN KEY (`EmployeeID`) REFERENCES `Part Time`(`EmployeeID`)
+);
+
+CREATE TABLE `Full Time` (
+  `EmployeeID` int IDENTITY(1,1)  PRIMARY KEY,
+  `lastName` CHAR(20) NOT NULL,
+  `firstName` CHAR(20) NOT NULL,
+  `PhoneNumber` VARCHAR(20) NOT NULL,
+  `Email` VARCHAR(25) NOT NULL,
+  `Salary` DOUBLE(6) NOT NULL,
+  FOREIGN KEY (`EmployeeID`) REFERENCES `Employee`(`EmployeeID`)
+);
+
+CREATE TABLE `Customer` (
+  `customerNumber` INT IDENTITY(1,1) PRIMARY KEY,
+  `customerName` CHAR(25) NOT NULL,
+  `customerPhone` CHAR(25) NOT NULL,
+  `street` VARCHAR(20),
+  `city` VARCHAR(20),
+  `state` CHAR(2),
+  `zipcode` INT(10),
+  `customerEmail` VARCHAR(25) ,
+  PRIMARY KEY (`customerNumber`),
+  FOREIGN KEY (`customerNumber`) REFERENCES `Employee`(`EmployeeID`)
+);
+
+CREATE TABLE `Orders` (
+  `orderNumber` INT IDENTITY(1,1) PRIMARY KEY,
+  `orderDate` DATE DEFAULT SYSDATE NOT NULL,
+  `requiredDate` VARCHAR(10) ,
+  `shippedDate` VARCHAR(10),
+  `status` VARCHAR(10),
+  `comments` VARCHAR(50),
+  `customerNumber` INT IDENTITY(1,1) ,
+  PRIMARY KEY (`orderNumber`),
+  FOREIGN KEY (`customerNumber`) REFERENCES `Customer`(`customerNumber`)
+);
+
+CREATE TABLE `purchaseDetails` (
+  `orderNumber` INT IDENTITY(1,1) ,
+  `quantityOrdered` INT(5),
+  `productPrice` INT(6) NOT NULL,
+  `orderLineNumber` INT IDENTITY(1,1) PRIMARY KEY,
+  PRIMARY KEY (`orderLineNumber`),
+  FOREIGN KEY (`orderNumber`) REFERENCES `Orders`(`orderNumber`)
+);
+
+CREATE TABLE `Product` (
+  `productName` VARCHAR(50)  NOT NULL,
+  `productLine` INT IDENTITY(1,1) ,
+  `productVendor` VARCHAR(25) NOT NULL,
+  `buyPrice` DOUBLE(5) NOT NULL,
+  `orderLineNumber` INT IDENTITY(1,1) PRIMARY KEY,
+  PRIMARY KEY (`productLine`),
+  FOREIGN KEY (`orderLineNumber`) REFERENCES `purchaseDetails`(`orderLineNumber`)
+);
+
+CREATE TABLE `InventoryInStock` (
+  `productLine` int IDENTITY(1,1) ,
+  `productDescription` VARCHAR(50) NOT NULL,
+  `inventory` INT(5) NOT NULL,
+  FOREIGN KEY (`productLine`) REFERENCES `Product`(`productLine`)
+);
+
+CREATE TABLE `Payments` (
+  `customerNumber` INT IDENTITY(1,1) PRIMARY KEY,
+  `paymentType` VARCHAR(10),
+  `paymentDate` DATE DEFAULT SYSDATE NOT NULL,
+  `amount` DOUBLE(4) NOT NULL,
+  PRIMARY KEY (`paymentType`),
+  FOREIGN KEY (`customerNumber`) REFERENCES `Customer`(`customerNumber`)
+);
+
